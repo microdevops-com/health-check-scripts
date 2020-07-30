@@ -12,6 +12,7 @@ $uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', $r[1], $r[2], $r[3], $r[
 $mysqli = new mysqli($server, $user, $password, $db);
 
 if ($mysqli -> connect_errno) {
+	http_response_code(503);
         echo("Failed to connect to MySQL: " . $mysqli -> connect_error);
         exit();
 }
@@ -19,7 +20,9 @@ if ($mysqli -> connect_errno) {
 $query = "INSERT INTO checks (id) VALUES ('" . $uuid . "')";
 
 if ($mysqli -> query($query) != TRUE) {
-          echo("Error: " . $sql . "<br>" . $mysqli -> error);
+	http_response_code(503);
+        echo("Error: " . $sql . "<br>" . $mysqli -> error);
+        exit();
 }
 
 $query = "SELECT SQL_NO_CACHE * FROM checks WHERE id = '" . $uuid . "'";
@@ -29,11 +32,15 @@ if ($result = $mysqli -> query($query)) {
         if ($row[0] == $uuid) {
                 echo("OK: uuid = " . $row[0] . ", datetime = " . $row[1]);
         } else {
+		http_response_code(503);
                 echo("NOT OK");
+		exit();
         }
         $result -> free_result();
 } else {
+	http_response_code(503);
         echo("NOT OK");
+        exit();
 }
 
 $mysqli -> close();
