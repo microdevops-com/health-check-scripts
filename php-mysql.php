@@ -6,8 +6,7 @@ header("Pragma: no-cache");
 
 require "health.inc";
 
-$r = unpack('v*', fread(fopen('/dev/random', 'r'),16));
-$uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', $r[1], $r[2], $r[3], $r[4] & 0x0fff | 0x4000, $r[5] & 0x3fff | 0x8000, $r[6], $r[7], $r[8]);
+$uuid = rtrim(file_get_contents("/proc/sys/kernel/random/uuid"));
 
 $mysqli = new mysqli($server, $user, $password, $db);
 
